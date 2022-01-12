@@ -1,0 +1,26 @@
+{
+  "name": "RVSAppPlatForm",
+  "version": "1.0.0",
+  "description": "My super-excellent Nuxt.js project",
+  "author": "RVS TEAM",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"node auth/login.js\"  \"node ws/index.js\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dateformat": "^4.5.1",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.5.9",
+    "mssql": "^6.2.0",
+    "mysql": "^2.18.1",
+    "pg": "^8.7.1",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "typeorm": "^0.2.37"
+  },
+  "devDependencies": {
+    "concurrently": "^6.2.2"
+  }
+}

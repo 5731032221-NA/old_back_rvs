@@ -1,0 +1,8 @@
+{
+    "0000": "Access Denied",
+    "1000": "Invalid Parameter",
+    "INVALIDTOKEN" : { "2002": "Invalid Token" },
+    "TOKENEXP" : { "2500": "Token Expired" },
+    "SESSIONTIMEOUT": { "3000": "Session Timeout" },
+    "LIMITSESSION": { "9001": "Session Denied"}
+}

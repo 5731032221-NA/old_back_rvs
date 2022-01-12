@@ -1,0 +1,20 @@
+{
+    "SVC":{
+        "DEFAULT":{
+            "code": "0000",
+            "msg": "Access Denied" },
+        "CRUD": {
+            "code": "2000",
+            "msg":{
+                "C": "Successfully Created (##)",
+                "R": "(##) Read List",
+                "U": "Successfully Updated (##)",
+                "D": "Successfully Deleted (##)"
+            }
+        }
+    },
+    "INVALIDTOKEN" : { "2002": "Invalid Token" },
+    "TOKENEXP" : { "2500": "Token Expired" },
+    "SESSIONTIMEOUT": { "3000": "Session Timeout" },
+    "LIMITSESSION": { "9001": "Session Denied"}
+}

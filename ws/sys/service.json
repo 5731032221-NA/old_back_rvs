@@ -1,0 +1,17 @@
+{
+  "logfpath": "./var/logf/$$LF.log",
+  "logbpath": "./var/logb/$$LF.log",
+  "_CREATE": "C",
+  "_READ": "R",
+  "_UPDATE": "U",
+  "_DELETE": "D",
+  "_SEPARATE": ",",
+  "CMP": {
+    "_RM": "ROOM",
+    "_RPT": "REPORT",
+    "_CFG": "CONFIG",
+    "_MST": "MASTER"
+  },
+  "TOKENEXPIREIN": "30",
+  "timeZone": "Asia/Bangkok"
+}

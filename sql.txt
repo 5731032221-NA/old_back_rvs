@@ -1,0 +1,1849 @@
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS property;
+DROP TABLE IF EXISTS roommst;
+DROP TABLE IF EXISTS brand;
+DROP TABLE IF EXISTS rolegroup;
+DROP TABLE IF EXISTS userpermission;
+DROP TABLE IF EXISTS rolepermission;
+DROP TABLE IF EXISTS userrole;
+DROP TABLE IF EXISTS grantproperty;
+DROP TABLE IF EXISTS position;
+DROP TABLE IF EXISTS configuration;
+DROP TABLE IF EXISTS computerprinter;
+DROP TABLE IF EXISTS registerdhardware;
+DROP TABLE IF EXISTS configmaster;
+DROP TABLE IF EXISTS adgroup;
+
+
+
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE IF NOT EXISTS account (
+   id serial PRIMARY KEY,
+   username VARCHAR(255) UNIQUE NOT NULL,
+   password VARCHAR(255) NOT NULL,
+   firstname VARCHAR(50),
+   lastname VARCHAR(50),
+   dateofbirth INT,
+   status VARCHAR(8),
+   permissioncode TEXT,
+   position VARCHAR(100),
+   adaccount VARCHAR(255) ,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_user
+BEFORE UPDATE ON account
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE IF NOT EXISTS role (
+   id serial PRIMARY KEY,
+   name VARCHAR(100) NOT NULL,
+   description VARCHAR(255),
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_role
+BEFORE UPDATE ON role
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+CREATE TABLE IF NOT EXISTS property (
+   id serial PRIMARY KEY,
+   propertycode VARCHAR(50) UNIQUE NOT NULL ,
+   name VARCHAR(50) NOT NULL,
+   brandid VARCHAR(255),
+   starrating INT,
+   city VARCHAR(35),
+   postalcode INT,
+   roomcount VARCHAR(255),
+   timezone VARCHAR(10),
+   streetaddress text,
+   areacitycode VARCHAR(10),
+   countrycode VARCHAR(2),
+   propertypicture text,
+   propetystatus character varying(200) DEFAULT NULL::bpchar,
+   remark text,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TRIGGER set_timestamp_property
+BEFORE UPDATE ON property
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS brand (
+   id serial PRIMARY KEY,
+   name VARCHAR(50),
+   chain VARCHAR(50),
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TRIGGER set_timestamp_brand
+BEFORE UPDATE ON brand
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+CREATE TABLE IF NOT EXISTS roommst (
+   id serial PRIMARY KEY,
+   no VARCHAR(20),
+   propertycode VARCHAR(50),
+   exposure TEXT,
+   type VARCHAR(20),
+   floor VARCHAR(10),
+   building VARCHAR(50),
+   wing VARCHAR(20),
+   description TEXT,
+   sqsize VARCHAR(20),
+   seq INT,
+   status VARCHAR(20),
+   attribute TEXT,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER set_timestamp_roommst
+BEFORE UPDATE ON roommst
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8038', 'SUPERIOR', 'F3', 'TOWER 1', 'EAST', 'Mountain View', '', '56 sq.m', 90, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8040', 'DELUX', 'F4', 'TOWER 2', 'NORTH', 'Town View', '', '56 sq.m', 100, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8041', 'SUPERIOR', 'F5', 'TOWER 1', 'EAST', 'Sea View', '', '56 sq.m', 110, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8042', 'DELUX', 'F6', 'TOWER 2', 'NORTH', 'Market View', '', '56 sq.m', 120, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8043', 'SUPERIOR', 'F7', 'TOWER 1', 'EAST', 'Mountain View', '', '56 sq.m', 130, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8044', 'SUPERIOR', 'F3', 'TOWER 1', 'NORTH', 'Town View', '', '56 sq.m', 140, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8047', 'SUPERIOR', 'F7', 'TOWER 2', 'EAST', 'Market View', '', '56 sq.m', 130, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8048', 'DELUX', 'F7', 'TOWER 2', 'NORTH', 'Market View', '', '56 sq.m', 130, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8003', 'SUPERIOR', 'F7', 'TOWER 3', 'NORTH', 'Market View', 'desc', '56 sq.m', 2, 'In House', 'MINIBAR,NTV');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8004', 'SUPERIOR', 'F3', 'TOWER 3', 'NORTH', 'Market View', 'test', '56 sq.m', 1, 'Vacant Clean', 'NTV,SM,BC');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8001', 'SUPERIOR', 'F7', 'TOWER 3', 'NORTH', 'Market View', 'desc', '56 sq.m', 2, 'Vacant Clean', 'MINIBAR');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ2', '8005', 'DELUX', 'F3', 'TOWER 1', 'NORTH', 'Mountain View', 'desc', '56 sq.m', 1, 'Vacant Clean', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ2', '8006', 'SUPERIOR', 'F3', 'TOWER 1', 'EAST', 'Mountain View', 'desc', '56 sq.m', 1, 'Vacant Clean', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ2', '8007', 'DELUX', 'F3', 'TOWER 1', 'EAST', 'Market View', 'desc', '56 sq.m', 2, 'In House', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ2', '8008', 'SUPERIOR', 'F3', 'TOWER 1', 'EAST', 'Mountain View', 'desc', '56 sq.m', 1, 'Vacant Clean', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ2', '8010', 'DELUX', 'F7', 'TOWER 3', 'NORTH', 'Market View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8011', 'SUPERIOR', 'F3', 'TOWER 1', 'EAST', 'Mountain View', '', '56 sq.m', 1, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8012', 'DELUX', 'F4', 'TOWER 3', 'NORTH', 'Town View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8013', 'SUPERIOR', 'F7', 'TOWER 1', 'NORTH', 'Mountain View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8015', 'SUPERIOR', 'F3', 'TOWER 1', 'NORTH', 'Mountain View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8016', 'DELUX', 'F4', 'TOWER 3', 'EAST', 'Town View', '', '56 sq.m', 1, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8017', 'SUPERIOR', 'F5', 'TOWER 1', 'NORTH', 'Sea View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8018', 'DELUX', 'F7', 'TOWER 3', 'NORTH', 'Market View', '', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TKSA', '8020', 'SUPERIOR', 'F7', 'TOWER 2', 'NORTH', 'Market View', '', '56 sq.m', 1, 'In House', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8009', 'SUPERIOR', 'F7', 'TOWER 2', 'NORTH', 'Market View', ' ', '56 sq.m', 1, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8002', 'DELUX', 'F7', 'TOWER 2', 'NORTH', 'Market View', 'desc', '56 sq.m', 3, 'Vacant Clean', 'SM,MINIBAR,BC');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8022', 'DELUX', 'F7', 'TOWER 1', 'NORTH', 'Market View', '', '56 sq.m', 10, 'In House', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('SPJ1', '8000', 'DELUX', 'F3', 'TOWER 1', 'EAST', 'Market View', 'test', '56 sq.m', 1, 'Vacant Clean', 'SM,NTV');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8033', 'SUPERIOR', 'F3', 'TOWER 3', 'NORTH', 'Market View', '', '56 sq.m', 20, 'Vacant Clean', 'SM');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8049', 'DELUX', 'F7', 'TOWER 2', 'NORTH', 'Market View', '', '56 sq.m', 130, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8050', 'DELUX', 'F7', 'TOWER 1', 'EAST', 'Market View', '', '56 sq.m', 130, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8035', 'DELUX', 'F7', 'TOWER 2', 'EAST', 'Market View', '', '56 sq.m', 50, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8036', 'DELUX', 'F7', 'TOWER 1', 'NORTH', 'Market View', '', '56 sq.m', 50, 'Vacant Clean', '');
+INSERT INTO roommst (propertycode, no, type, floor, building, wing, exposure, description, sqsize, seq, status, attribute) VALUES ('TS36', '8037', 'DELUX', 'F7', 'TOWER 1', 'NORTH', 'Market View', '', '56 sq.m', 80, 'Vacant Clean', '');
+
+
+update roommst set description='description' where description='desc';
+
+
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('ADMIN','pass','Admin','Admin',20210824,'Administrator','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('root','pass','Root','Root',20210824,'Root','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('SOMCIA','pass','Somchai','Iangkoo',20210824,'Cashier','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('SAMOON','pass','Sam','Oontakul',20210824,'Cashier','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('JWIEL','pass','J.','Wiely',20210824,'Manager','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('JAMESW','pass','Jame','Smith',20210824,'Cashier','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('KANA','pass','Kan','Anawan',20210824,'Cashier','Inactive');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('TEST','pass','Test','001',20210824,'Test account','Active');
+
+insert into account (username,password,firstname,lastname,dateofbirth,position,status)
+values ('TEST2','5f4dcc3b5aa765d61d8327deb882cf99','Test','001',20210824,'Test account','Active');
+
+CREATE TABLE IF NOT EXISTS rolegroup (
+   id serial PRIMARY KEY,
+   rolecode VARCHAR(50) NOT NULL,
+   rolename VARCHAR(100),
+   description TEXT,
+   status VARCHAR(8),
+   applypropertys TEXT,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE rolegroup
+ADD COLUMN applygroups TEXT;
+
+CREATE TRIGGER set_timestamp_rolegroup
+BEFORE UPDATE ON rolegroup
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into rolegroup (rolecode,rolename,description,status,applypropertys)
+values ('CASHIER','Cashier Group','Cashier role in property ...','Active','TS36,TKSA');
+
+insert into rolegroup (rolecode,rolename,description,status,applypropertys)
+values ('MANAGER','Manager Role','Manager role in property ...','Active','*ALL');
+
+insert into rolegroup (rolecode,rolename,description,status,applypropertys)
+values ('GRPCSH','Group Cashier','Group Cashier role','Active','SPJ1,SPJ2');
+
+
+
+
+CREATE TABLE IF NOT EXISTS userpermission (
+   username VARCHAR(255),
+   componentcode VARCHAR(50),
+   permissioncreate INT,
+   permissionread INT,
+   permissionupdate INT,
+   permissiondelete INT,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER set_timestamp_userpermission
+BEFORE UPDATE ON userpermission
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE IF NOT EXISTS rolepermission (
+   rolecode VARCHAR(255),
+   componentcode VARCHAR(50),
+   permissioncreate INT,
+   permissionread INT,
+   permissionupdate INT,
+   permissiondelete INT,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER set_timestamp_rolepermission
+BEFORE UPDATE ON rolepermission
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('CASHIER','DB',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('CASHIER','CS',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('GRPCSH','DB',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('GRPCSH','RV',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('GRPCSH','FD',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('GRPCSH','CS',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('MANAGER','DB',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('MANAGER','PF',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('MANAGER','RS',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('MANAGER','CF',1,1,1,1);
+insert into rolepermission (rolecode,componentcode,permissioncreate,permissionread,permissionupdate,permissiondelete)
+values ('MANAGER','ST',1,1,1,1);
+
+CREATE TABLE IF NOT EXISTS userrole (
+   username VARCHAR(255),
+   rolecode VARCHAR(50),
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER set_timestamp_userrole
+BEFORE UPDATE ON userpermission
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE IF NOT EXISTS grantproperty (
+   username VARCHAR(255),
+   propertycode VARCHAR(255),
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_grantproperty
+BEFORE UPDATE ON userpermission
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into userrole (username,rolecode)
+values ('SOMCIA','CASHIER');
+insert into userrole (username,rolecode)
+values ('SOMCIA','GRPCSH');
+insert into userrole (username,rolecode)
+values ('SAMOON','CASHIER');
+insert into userrole (username,rolecode)
+values ('JAMESW','GRPCSH');
+insert into userrole (username,rolecode)
+values ('KANA','MANAGER');
+insert into userrole (username,rolecode)
+values ('JWIEL','MANAGER');
+insert into userrole (username,rolecode)
+values ('KANA','GRPCSH');
+insert into userrole (username,rolecode)
+values ('TEST','CASHIER');
+insert into userrole (username,rolecode)
+values ('TEST','GRPCSH');
+insert into userrole (username,rolecode)
+values ('TEST2','CASHIER');
+insert into userrole (username,rolecode)
+values ('TEST2','GRPCSH');
+insert into userrole (username,rolecode)
+values ('TEST2','MANAGER');
+
+
+
+
+insert into grantproperty (username,propertycode)
+values ('SOMCIA','SPJ1');
+insert into grantproperty (username,propertycode)
+values ('SAMOON','SPJ1');
+insert into grantproperty (username,propertycode)
+values ('SAMOON','SPJ2');
+insert into grantproperty (username,propertycode)
+values ('JAMESW','TS36');
+insert into grantproperty (username,propertycode)
+values ('JAMESW','TKSA');
+insert into grantproperty (username,propertycode)
+values ('KANA','TS36');
+insert into grantproperty (username,propertycode)
+values ('JWIEL','TS36');
+insert into grantproperty (username,propertycode)
+values ('TEST','TS36');
+insert into grantproperty (username,propertycode)
+values ('TEST','SPJ1');
+insert into grantproperty (username,propertycode)
+values ('TEST2','TS36');
+insert into grantproperty (username,propertycode)
+values ('TEST2','SPJ1');
+insert into grantproperty (username,propertycode)
+values ('ADMIN','*ALL');
+insert into grantproperty (username,propertycode)
+values ('root','*ALL');
+
+
+CREATE TABLE IF NOT EXISTS configuration (
+   id serial PRIMARY KEY,
+   propertycode VARCHAR(255),
+   configuration jsonb
+);
+
+insert into configuration (propertycode)
+values ('SPJ1');
+insert into configuration (propertycode)
+values ('TS36');
+insert into configuration (propertycode)
+values ('TKSA');
+insert into configuration (propertycode)
+values ('SPJ2');
+
+update configuration set configuration = '[
+  {
+    "id": 1000000001,
+    "code": "CFGPMS",
+    "RefNo": "1.1",
+    "master": true,
+    "name_cn": "PMS 配置",
+    "name_en": "PMS Configuration",
+    "name_th": "การกำหนดค่า PMS",
+    "addchild": true,
+    "children": [
+      {
+        "id": 1000000002,
+        "code": "CFGPROP",
+        "RefNo": "1.1.1",
+        "master": true,
+        "name_en": "Property Configuration",
+        "name_th": "การกำหนดค่า Property",
+        "addchild": false,
+        "children": [
+          {
+            "id": 1000000003,
+            "code": "PROPERTY",
+            "RefNo": "1.1.1.1",
+            "master": true,
+            "name_en": "Property Master",
+            "addchild": true,
+            "children": [
+              {
+                "code": "SPJ1",
+                "RefNo": "1.1.1.1.1",
+                "master": false,
+                "name_en": "SPJ1",
+                "addchild": false,
+                "createdate": "2021-09-10 14:4:14",
+                "description": "SPJ1 Property"
+              },
+              {
+                "code": "SPJ2",
+                "RefNo": "1.1.1.1.2",
+                "master": false,
+                "name_en": "SPJ2",
+                "addchild": false,
+                "createdate": "2021-09-10 14:6:52",
+                "description": "SPJ2 Property"
+              },
+              {
+                "code": "TKSA",
+                "RefNo": "1.1.1.1.3",
+                "master": false,
+                "name_en": "TKSA",
+                "addchild": false,
+                "createdate": "2021-09-10 14:7:54",
+                "description": "TKSA Property"
+              },
+              {
+                "code": "TS36",
+                "RefNo": "1.1.1.1.4",
+                "master": false,
+                "name_en": "TS36",
+                "addchild": false,
+                "createdate": "2021-09-10 14:8:19",
+                "description": "TS36 Property"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "PROPERTY description"
+          },
+          {
+            "id": 1000000004,
+            "code": "BUILDING",
+            "RefNo": "1.1.1.2",
+            "master": true,
+            "name_en": "Building Master",
+            "addchild": true,
+            "children": [
+              {
+                "code": "TOWER1",
+                "RefNo": "1.1.1.2.1",
+                "master": false,
+                "name_en": "TOWER 1",
+                "addchild": false,
+                "createdate": "2021-09-10 14:8:58",
+                "description": "TOWER1 Desc"
+              },
+              {
+                "code": "TOWER2",
+                "RefNo": "1.1.1.2.2",
+                "master": false,
+                "name_en": "TOWER 2",
+                "addchild": false,
+                "createdate": "2021-09-10 14:9:13",
+                "description": "TOWER2"
+              },
+              {
+                "code": "TOWER3",
+                "RefNo": "1.1.1.2.3",
+                "master": false,
+                "name_en": "TOWER 3",
+                "addchild": false,
+                "createdate": "2021-09-10 14:9:33",
+                "description": "TOWER 3 Desc"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "BUILDING description"
+          },
+          {
+            "id": 1000000005,
+            "code": "EXPOSURE",
+            "RefNo": "1.1.1.3",
+            "master": true,
+            "name_en": "Exposure",
+            "addchild": true,
+            "children": [
+              {
+                "code": "MOUNTAIN",
+                "RefNo": "1.1.1.3.1",
+                "master": false,
+                "name_en": "Mountain View",
+                "addchild": false,
+                "createdate": "2021-09-10 14:12:35",
+                "description": "Mountain View"
+              },
+              {
+                "code": "SEA",
+                "RefNo": "1.1.1.3.2",
+                "master": false,
+                "name_en": "Sea View",
+                "addchild": false,
+                "createdate": "2021-09-10 14:13:1",
+                "description": "Sea View"
+              },
+              {
+                "code": "TOWN",
+                "RefNo": "1.1.1.3.3",
+                "master": false,
+                "name_en": "Town View",
+                "addchild": false,
+                "createdate": "2021-09-10 14:13:31",
+                "description": "Town View"
+              },
+              {
+                "code": "MARKET",
+                "RefNo": "1.1.1.3.4",
+                "master": false,
+                "name_en": "Market View",
+                "addchild": false,
+                "createdate": "2021-09-10 14:15:37",
+                "description": "Market View"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "EXPOSURE description"
+          },
+          {
+            "id": 1000000006,
+            "code": "FLOOR",
+            "RefNo": "1.1.1.4",
+            "master": true,
+            "name_en": "Floor",
+            "name_th": "ชั้น",
+            "addchild": true,
+            "children": [
+              {
+                "code": "F3",
+                "RefNo": "1.1.1.4.1",
+                "master": false,
+                "name_en": "F3",
+                "addchild": false,
+                "createdate": "2021-09-10 14:10:4",
+                "description": "Floor 3"
+              },
+              {
+                "code": "F4",
+                "RefNo": "1.1.1.4.2",
+                "master": false,
+                "name_en": "F4",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:11",
+                "description": "Floor 4"
+              },
+              {
+                "code": "F5",
+                "RefNo": "1.1.1.4.3",
+                "master": false,
+                "name_en": "F5",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:34",
+                "description": "Floor 5"
+              },
+              {
+                "code": "F6",
+                "RefNo": "1.1.1.4.4",
+                "master": false,
+                "name_en": "F6",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:57",
+                "description": "Floor 6"
+              },
+              {
+                "code": "F7",
+                "RefNo": "1.1.1.4.5",
+                "master": false,
+                "name_en": "F7",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:57",
+                "description": "Floor 7"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "FLOOR description"
+          },
+          {
+            "id": 1000000007,
+            "code": "ZONE",
+            "RefNo": "1.1.1.5",
+            "master": true,
+            "name_en": "Zone/Wing",
+            "addchild": true,
+            "children": [
+              {
+                "code": "EAST",
+                "RefNo": "1.1.1.5.1",
+                "master": false,
+                "name_en": "East",
+                "addchild": false,
+                "createdate": "2021-09-10 14:10:4",
+                "description": "East Desc"
+              },
+              {
+                "code": "NORTH",
+                "RefNo": "1.1.1.5.2",
+                "master": false,
+                "name_en": "North",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:11",
+                "description": "North Desc"
+              },
+              {
+                "code": "SOUTH",
+                "RefNo": "1.1.1.5.3",
+                "master": false,
+                "name_en": "South",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:34",
+                "description": "South Desc"
+              },
+              {
+                "code": "WEST",
+                "RefNo": "1.1.1.5.4",
+                "master": false,
+                "name_en": "West",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:57",
+                "description": "West Desc"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "ZONE description"
+          },
+          {
+            "id": 1000000007,
+            "code": "ATTRIBUTE",
+            "RefNo": "1.1.1.6",
+            "master": true,
+            "name_en": "Attribute",
+            "addchild": true,
+            "children": [
+              {
+                "code": "BC",
+                "RefNo": "1.1.1.6.1",
+                "master": false,
+                "name_en": "BC",
+                "addchild": false,
+                "createdate": "2021-09-10 14:10:4",
+                "description": "BC Desc"
+              },
+              {
+                "code": "MINIBAR",
+                "RefNo": "1.1.1.6.2",
+                "master": false,
+                "name_en": "Minibar",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:11",
+                "description": "Minibar Desc"
+              },
+              {
+                "code": "NTV",
+                "RefNo": "1.1.1.6.3",
+                "master": false,
+                "name_en": "NTV",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:34",
+                "description": "NTV Desc"
+              },
+              {
+                "code": "SM",
+                "RefNo": "1.1.1.6.4",
+                "master": false,
+                "name_en": "SM",
+                "addchild": false,
+                "createdate": "2021-09-10 14:11:57",
+                "description": "SM Desc"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "Attribute description"
+          }
+        ],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "CFGPROP Configuration"
+      },
+      {
+        "id": 1000000008,
+        "code": "CFGROOM",
+        "RefNo": "1.1.2",
+        "master": true,
+        "name_en": "Room Configuration",
+        "name_th": "การกำหนดค่าห้อง",
+        "addchild": false,
+        "children": [
+          {
+            "id": 1000000009,
+            "code": "RMTYPE",
+            "RefNo": "1.1.2.1",
+            "master": true,
+            "name_en": "Room Type",
+            "name_th": "ประเภทห้อง",
+            "addchild": true,
+            "children": [
+              {
+                "code": "SUPERIOR",
+                "RefNo": "1.1.2.1.1",
+                "master": false,
+                "name_en": "SUPERIOR",
+                "addchild": false,
+                "createdate": "2021-09-10 14:21:58",
+                "description": "Superior"
+              },
+              {
+                "code": "DELUX",
+                "RefNo": "1.1.2.1.2",
+                "master": false,
+                "name_en": "DELUX",
+                "addchild": false,
+                "createdate": "2021-09-10 14:22:29",
+                "description": "DELUX"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "CFGPMS description"
+          },
+          {
+            "id": 1000000010,
+            "code": "RMCAT",
+            "RefNo": "1.1.2.2",
+            "master": true,
+            "name_en": "Room Category",
+            "name_th": "ประเภทห้อง",
+            "addchild": true,
+            "children": [
+              {
+                "code": "ROOMSIZE",
+                "RefNo": "1.1.2.2.1",
+                "master": false,
+                "name_en": "Room Size",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "SQ56",
+                    "RefNo": "1.1.2.2.1.1",
+                    "master": false,
+                    "name_en": "56 sq.m",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "56 sq.m"
+                  },
+                  {
+                    "code": "SQ100",
+                    "RefNo": "1.1.2.2.1.1",
+                    "master": false,
+                    "name_en": "100 sq.m",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "100 sq.m"
+                  }
+                ],
+                "createdate": "2021-09-10 14:24:17",
+                "description": "Room Size"
+              },
+              {
+                "code": "ROOMSEG",
+                "RefNo": "1.1.2.2.2",
+                "master": false,
+                "name_en": "Room Seg",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "SEG1",
+                    "RefNo": "1.1.2.2.2.1",
+                    "master": false,
+                    "name_en": "1",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "1"
+                  },
+                  {
+                    "code": "SEG2",
+                    "RefNo": "1.1.2.2.2.1",
+                    "master": false,
+                    "name_en": "2",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "2"
+                  },
+                  {
+                    "code": "SEG3",
+                    "RefNo": "1.1.2.2.2.1",
+                    "master": false,
+                    "name_en": "3",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "3"
+                  }
+                ],
+                "createdate": "2021-09-10 14:24:41",
+                "description": "Room Seg"
+              },
+              {
+                "code": "ROOMSTATUS",
+                "RefNo": "1.1.2.2.3",
+                "master": false,
+                "name_en": "Room Status",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "IN",
+                    "RefNo": "1.1.2.2.2.1",
+                    "master": false,
+                    "name_en": "In House",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "In House"
+                  },
+                  {
+                    "code": "VC",
+                    "RefNo": "1.1.2.2.2.1",
+                    "master": false,
+                    "name_en": "Vacant Clean",
+                    "addchild": false,
+                    "createdate": "2021-09-10 14:24:41",
+                    "description": "Vacant Clean"
+                  }
+                ],
+                "createdate": "2021-09-10 14:25:6",
+                "description": "Room Status"
+              }
+            ],
+            "createdate": "2021-08-13 12:03:00",
+            "description": "RMCAT description"
+          },
+          {
+            "id": 1000000011,
+            "code": "ROOM",
+            "RefNo": "1.1.2.3",
+            "master": true,
+            "name_en": "Room Master Maintenance",
+            "name_th": "การบำรุงรักษาห้องมาสเตอร์",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "ROOM description"
+          }
+        ],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "CFG"
+      },
+      {
+        "id": 1000000012,
+        "code": "CFGITEM",
+        "RefNo": "1.1.3",
+        "master": true,
+        "name_en": "Item Configuration",
+        "name_th": "การกำหนดค่ารายการ",
+        "addchild": false,
+        "children": [
+          {
+            "id": 1000000013,
+            "code": "ITEMTYPE",
+            "RefNo": "1.1.3.1",
+            "master": true,
+            "name_en": "Item Type",
+            "name_th": "ประเภทรายการ",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "ITEMTYPE description"
+          },
+          {
+            "id": 1000000014,
+            "code": "ITEMCAT",
+            "RefNo": "1.1.3.2",
+            "master": true,
+            "name_en": "Item Category",
+            "name_th": "หมวดหมู่รายการ",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "ITEMCAT description"
+          }
+        ],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "CFGITEM description"
+      },
+      {
+        "id": 1000000015,
+        "code": "CFGRSVN",
+        "RefNo": "1.1.4",
+        "master": true,
+        "name_en": "Reservation Configuration",
+        "name_th": "การกำหนดค่าการจอง",
+        "addchild": false,
+        "children": [
+          {
+            "id": 1000000016,
+            "code": "MARKET",
+            "RefNo": "1.1.4.1",
+            "master": true,
+            "name_en": "Market segment Maintenance",
+            "name_th": "การบำรุงรักษาส่วนตลาด",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "MARKET description"
+          },
+          {
+            "id": 1000000017,
+            "code": "SOURCE",
+            "RefNo": "1.1.4.2",
+            "master": true,
+            "name_en": "Source Maintenance",
+            "name_th": "การบำรุงรักษาแหล่งที่มา",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "SOURCE description"
+          }
+        ],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "CFGRSVN description"
+      },
+      {
+        "code": "PC",
+        "RefNo": "1.1.5",
+        "master": false,
+        "name_en": "Profiles Configuration",
+        "addchild": true,
+        "children": [
+          {
+            "code": "PCIND",
+            "RefNo": "1.1.5.1",
+            "master": false,
+            "name_en": "Individual Configuration",
+            "addchild": true,
+            "children": [
+              {
+                "code": "PCINDTT",
+                "RefNo": "1.1.5.1.1",
+                "master": false,
+                "name_en": "Title",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCINDTTMR",
+                    "RefNo": "1.1.5.1.1.1",
+                    "master": false,
+                    "name_en": "Mr.",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:30:40",
+                    "description": "Mister"
+                  },
+                  {
+                    "code": "PCINDTTMRS",
+                    "RefNo": "1.1.5.1.1.2",
+                    "master": false,
+                    "name_en": "Mrs.",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:31:5",
+                    "description": "Mrs."
+                  },
+                  {
+                    "code": "PCINDTTMI",
+                    "RefNo": "1.1.5.1.1.3",
+                    "master": false,
+                    "name_en": "Miss",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:32:4",
+                    "description": "Miss"
+                  }
+                ],
+                "createdate": "2021-11-05 20:26:45",
+                "description": "Title"
+              },
+              {
+                "code": "PCINDGD",
+                "RefNo": "1.1.5.1.2",
+                "master": false,
+                "name_en": "Gender",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCINDGDM",
+                    "RefNo": "1.1.5.1.2.1",
+                    "master": false,
+                    "name_en": "Male",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:32:40",
+                    "description": "Male"
+                  },
+                  {
+                    "code": "PCINDGDF",
+                    "RefNo": "1.1.5.1.2.2",
+                    "master": false,
+                    "name_en": "Female",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:33:7",
+                    "description": "Female"
+                  }
+                ],
+                "createdate": "2021-11-05 20:27:36",
+                "description": "Gender"
+              },
+              {
+                "code": "PCINDCM",
+                "RefNo": "1.1.5.1.3",
+                "master": false,
+                "name_en": "Communication Type",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCINDCMTN",
+                    "RefNo": "1.1.5.1.3.1",
+                    "master": false,
+                    "name_en": "Telephone Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:10",
+                    "description": "Telephone Number"
+                  },
+                  {
+                    "code": "PCINDCMMN",
+                    "RefNo": "1.1.5.1.3.2",
+                    "master": false,
+                    "name_en": "Mobile Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:42",
+                    "description": "Mobile Number"
+                  },
+                  {
+                    "code": "PCINDCMEA",
+                    "RefNo": "1.1.5.1.3.3",
+                    "master": false,
+                    "name_en": "Email Address",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:20",
+                    "description": "Email Address"
+                  },
+                  {
+                    "code": "PCINDCMTW",
+                    "RefNo": "1.1.5.1.3.4",
+                    "master": false,
+                    "name_en": "Twitter",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:45",
+                    "description": "Twitter"
+                  },
+                  {
+                    "code": "PCINDCMIG",
+                    "RefNo": "1.1.5.1.3.5",
+                    "master": false,
+                    "name_en": "Instragram",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:13",
+                    "description": "Instragram"
+                  },
+                  {
+                    "code": "PCINDCMFB",
+                    "RefNo": "1.1.5.1.3.6",
+                    "master": false,
+                    "name_en": "Facebook",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:45",
+                    "description": "Facebook"
+                  }
+                ],
+                "createdate": "2021-11-05 20:29:3",
+                "description": "Communication Type"
+              },
+              {
+                "code": "PCINDRL",
+                "RefNo": "1.1.5.1.4",
+                "master": false,
+                "name_en": "Relation",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCINDRLFM",
+                    "RefNo": "1.1.5.1.4.1",
+                    "master": false,
+                    "name_en": "Family",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:39:0",
+                    "description": "Family"
+                  },
+                  {
+                    "code": "PCINDRLSP",
+                    "RefNo": "1.1.5.1.4.2",
+                    "master": false,
+                    "name_en": "Spouse",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:40:12",
+                    "description": "SPOUSE"
+                  },
+                  {
+                    "code": "PCINDRLCL",
+                    "RefNo": "1.1.5.1.4.3",
+                    "master": false,
+                    "name_en": "Colleague",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:41:56",
+                    "description": "Colleague"
+                  },
+                  {
+                    "code": "PCINDRLRT",
+                    "RefNo": "1.1.5.1.4.4",
+                    "master": false,
+                    "name_en": "Report To",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:42:53",
+                    "description": "Report To"
+                  }
+                ],
+                "createdate": "2021-11-05 20:38:20",
+                "description": "Relation"
+              }
+            ],
+            "createdate": "2021-11-05 20:24:6",
+            "description": "Individual Configuration Desc"
+          },
+          {
+            "code": "PCTA",
+            "RefNo": "1.1.5.2",
+            "master": false,
+            "name_en": "Travel Agent Configuration",
+            "addchild": true,
+            "children": [
+              {
+                "code": "PCTANT",
+                "RefNo": "1.1.5.2.1",
+                "master": false,
+                "name_en": "Relation",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCTARLEM",
+                    "RefNo": "1.1.5.2.1.1",
+                    "master": false,
+                    "name_en": "Employer",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:47:10",
+                    "description": "Employer"
+                  },
+                  {
+                    "code": "PCTARLPC",
+                    "RefNo": "1.1.5.2.1.2",
+                    "master": false,
+                    "name_en": "Parent Company",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:47:34",
+                    "description": "Parent Company"
+                  },
+                  {
+                    "code": "PCTARLCC",
+                    "RefNo": "1.1.5.2.1.3",
+                    "master": false,
+                    "name_en": "Child Company",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:48:4",
+                    "description": "Child Company"
+                  }
+                ],
+                "createdate": "2021-11-05 20:44:53",
+                "description": "Relation"
+              },
+              {
+                "code": "PCTACM",
+                "RefNo": "1.1.5.1.3",
+                "master": false,
+                "name_en": "Communication Type",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCTACMTN",
+                    "RefNo": "1.1.5.1.3.1",
+                    "master": false,
+                    "name_en": "Telephone Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:10",
+                    "description": "Telephone Number"
+                  },
+                  {
+                    "code": "PCTACMMN",
+                    "RefNo": "1.1.5.1.3.2",
+                    "master": false,
+                    "name_en": "Mobile Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:42",
+                    "description": "Mobile Number"
+                  },
+                  {
+                    "code": "PCINDCMEA",
+                    "RefNo": "1.1.5.1.3.3",
+                    "master": false,
+                    "name_en": "Email Address",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:20",
+                    "description": "Email Address"
+                  },
+                  {
+                    "code": "PCTACMTW",
+                    "RefNo": "1.1.5.1.3.4",
+                    "master": false,
+                    "name_en": "Twitter",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:45",
+                    "description": "Twitter"
+                  },
+                  {
+                    "code": "PCTACMIG",
+                    "RefNo": "1.1.5.1.3.5",
+                    "master": false,
+                    "name_en": "Instragram",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:13",
+                    "description": "Instragram"
+                  },
+                  {
+                    "code": "PCTACMFB",
+                    "RefNo": "1.1.5.1.3.6",
+                    "master": false,
+                    "name_en": "Facebook",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:45",
+                    "description": "Facebook"
+                  }
+                ],
+                "createdate": "2021-11-05 20:29:3",
+                "description": "Communication Type"
+              },
+              {
+                "code": "PCTACU",
+                "RefNo": "1.1.5.2.2",
+                "master": false,
+                "name_en": "Currency",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCTACUBT",
+                    "RefNo": "1.1.5.2.2.1",
+                    "master": false,
+                    "name_en": "Baht",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:50:1",
+                    "description": "Baht"
+                  },
+                  {
+                    "code": "PCTACUDL",
+                    "RefNo": "1.1.5.2.2.2",
+                    "master": false,
+                    "name_en": "Dollar",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:50:26",
+                    "description": "Dollar"
+                  }
+                ],
+                "createdate": "2021-11-05 20:49:1",
+                "description": "Currency"
+              },
+              {
+                "code": "PCATCR",
+                "RefNo": "1.1.5.2.3",
+                "master": false,
+                "name_en": "Credit Rating",
+                "addchild": true,
+                "createdate": "2021-11-05 20:51:18",
+                "description": "Credit Rating"
+              },
+              {
+                "code": "PCTABI",
+                "RefNo": "1.1.5.2.4",
+                "master": false,
+                "name_en": "Billing Instruction",
+                "addchild": true,
+                "createdate": "2021-11-05 20:52:41",
+                "description": "Billing Instruction"
+              },
+              {
+                "code": "PCTAPM",
+                "RefNo": "1.1.5.2.5",
+                "master": false,
+                "name_en": "Payment",
+                "addchild": true,
+                "createdate": "2021-11-05 20:54:14",
+                "description": "Payment"
+              }
+            ],
+            "createdate": "2021-11-05 20:25:3",
+            "description": "Travel Agent Configuration Desc"
+          },
+          {
+            "code": "PCCP",
+            "RefNo": "1.1.5.3",
+            "master": false,
+            "name_en": "Company Configuration",
+            "addchild": true,
+            "children": [
+              {
+                "code": "PCCPNT",
+                "RefNo": "1.1.5.2.1",
+                "master": false,
+                "name_en": "Relation",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCCPRLEM",
+                    "RefNo": "1.1.5.2.1.1",
+                    "master": false,
+                    "name_en": "Employer",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:47:10",
+                    "description": "Employer"
+                  },
+                  {
+                    "code": "PCCPRLPC",
+                    "RefNo": "1.1.5.2.1.2",
+                    "master": false,
+                    "name_en": "Parent Company",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:47:34",
+                    "description": "Parent Company"
+                  },
+                  {
+                    "code": "PCCPRLCC",
+                    "RefNo": "1.1.5.2.1.3",
+                    "master": false,
+                    "name_en": "Child Company",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:48:4",
+                    "description": "Child Company"
+                  }
+                ],
+                "createdate": "2021-11-05 20:44:53",
+                "description": "Relation"
+              },
+              {
+                "code": "PCCPCM",
+                "RefNo": "1.1.5.1.3",
+                "master": false,
+                "name_en": "Communication Type",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCCPCMTN",
+                    "RefNo": "1.1.5.1.3.1",
+                    "master": false,
+                    "name_en": "Telephone Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:10",
+                    "description": "Telephone Number"
+                  },
+                  {
+                    "code": "PCCPCMMN",
+                    "RefNo": "1.1.5.1.3.2",
+                    "master": false,
+                    "name_en": "Mobile Number",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:34:42",
+                    "description": "Mobile Number"
+                  },
+                  {
+                    "code": "PCINDCMEA",
+                    "RefNo": "1.1.5.1.3.3",
+                    "master": false,
+                    "name_en": "Email Address",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:20",
+                    "description": "Email Address"
+                  },
+                  {
+                    "code": "PCCPCMTW",
+                    "RefNo": "1.1.5.1.3.4",
+                    "master": false,
+                    "name_en": "Twitter",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:35:45",
+                    "description": "Twitter"
+                  },
+                  {
+                    "code": "PCCPCMIG",
+                    "RefNo": "1.1.5.1.3.5",
+                    "master": false,
+                    "name_en": "Instragram",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:13",
+                    "description": "Instragram"
+                  },
+                  {
+                    "code": "PCCPCMFB",
+                    "RefNo": "1.1.5.1.3.6",
+                    "master": false,
+                    "name_en": "Facebook",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:36:45",
+                    "description": "Facebook"
+                  }
+                ],
+                "createdate": "2021-11-05 20:29:3",
+                "description": "Communication Type"
+              },
+              {
+                "code": "PCCPCU",
+                "RefNo": "1.1.5.2.2",
+                "master": false,
+                "name_en": "Currency",
+                "addchild": true,
+                "children": [
+                  {
+                    "code": "PCCPCUBT",
+                    "RefNo": "1.1.5.2.2.1",
+                    "master": false,
+                    "name_en": "Baht",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:50:1",
+                    "description": "Baht"
+                  },
+                  {
+                    "code": "PCCPCUDL",
+                    "RefNo": "1.1.5.2.2.2",
+                    "master": false,
+                    "name_en": "Dollar",
+                    "addchild": true,
+                    "createdate": "2021-11-05 20:50:26",
+                    "description": "Dollar"
+                  }
+                ],
+                "createdate": "2021-11-05 20:49:1",
+                "description": "Currency"
+              },
+              {
+                "code": "PCATCR",
+                "RefNo": "1.1.5.2.3",
+                "master": false,
+                "name_en": "Credit Rating",
+                "addchild": true,
+                "createdate": "2021-11-05 20:51:18",
+                "description": "Credit Rating"
+              },
+              {
+                "code": "PCCPBI",
+                "RefNo": "1.1.5.2.4",
+                "master": false,
+                "name_en": "Billing Instruction",
+                "addchild": true,
+                "createdate": "2021-11-05 20:52:41",
+                "description": "Billing Instruction"
+              },
+              {
+                "code": "PCCPPM",
+                "RefNo": "1.1.5.2.5",
+                "master": false,
+                "name_en": "Payment",
+                "addchild": true,
+                "createdate": "2021-11-05 20:54:14",
+                "description": "Payment"
+              }
+            ],
+            "createdate": "2021-11-05 20:25:27",
+            "description": "Company Configuration"
+          },
+          {
+            "code": "PCGP",
+            "RefNo": "1.1.5.4",
+            "master": false,
+            "name_en": "Group Configuration",
+            "addchild": true,
+            "createdate": "2021-11-05 20:25:54",
+            "description": "Group Configuration DEsc"
+          }
+        ],
+        "createdate": "2021-11-05 20:21:49",
+        "description": "Profiles Configuration Desc"
+      }
+    ],
+    "createdate": "2021-08-13 12:03:00",
+    "description": "CFGPMS description"
+  },
+  {
+    "id": 1000000018,
+    "code": "CFGSYS",
+    "RefNo": "1.2",
+    "master": true,
+    "name_en": "System Configuration",
+    "name_th": "การกำหนดค่าระบบ",
+    "addchild": false,
+    "children": [
+      {
+        "id": 1000000019,
+        "code": "USER",
+        "RefNo": "1.2.1",
+        "master": true,
+        "name_en": "User Management",
+        "name_th": "การจัดการผู้ใช้",
+        "addchild": true,
+        "children": [],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "USER description"
+      },
+      {
+        "id": 1000000020,
+        "code": "ROLE",
+        "RefNo": "1.2.2",
+        "master": true,
+        "name_en": "Role Management",
+        "name_th": "การจัดการบทบาท",
+        "addchild": true,
+        "createdate": "2021-08-13 12:03:00",
+        "description": "ROLE description"
+      },
+      {
+        "id": 1000000021,
+        "code": "DEVICEM",
+        "RefNo": "1.2.3",
+        "master": true,
+        "name_en": "Device Management",
+        "addchild": false,
+        "children": [
+          {
+            "id": 1000000022,
+            "code": "DEVICE",
+            "RefNo": "1.2.3.1",
+            "master": true,
+            "name_en": "Device Manager",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "Device Manager description"
+          },
+          {
+            "id": 1000000023,
+            "code": "COMPRT",
+            "RefNo": "1.2.3.2",
+            "master": true,
+            "name_en": "Computer-Printer",
+            "addchild": true,
+            "createdate": "2021-08-13 12:03:00",
+            "description": "Computer-Printer description"
+          }
+        ],
+        "createdate": "2021-08-13 12:03:00",
+        "description": "Device Management description"
+      }
+    ],
+    "createdate": "2021-08-13 12:03:00",
+    "description": "CFGSYS description"
+  },
+  {
+   "id": 1000000100,
+    "code": "CFGPMS",
+    "RefNo": "1.3",
+    "master": true,
+    "name_en": "Global Configuration",
+    "addchild": true,
+   }
+]';
+
+CREATE TABLE IF NOT EXISTS computerprinter (
+   id serial PRIMARY KEY,
+   username VARCHAR(100) NOT NULL,
+   computercode VARCHAR(100),
+   action VARCHAR(100) NOT NULL,
+   devicecode VARCHAR(100) NOT NULL,
+   tray VARCHAR(20),
+   remark TEXT,
+   specialstrings TEXT,
+   propertycode VARCHAR(50), 
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_computerprinter
+BEFORE UPDATE ON computerprinter
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE IF NOT EXISTS registerdhardware (
+   id serial PRIMARY KEY,
+   code VARCHAR(100) NOT NULL,
+   type VARCHAR(20),
+   name VARCHAR(100) NOT NULL,
+   macaddress VARCHAR(100) ,
+   ip VARCHAR(20),
+   propertycode VARCHAR(50), 
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TRIGGER set_timestamp_registerdhardware
+BEFORE UPDATE ON registerdhardware
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into registerdhardware (code,type,name,macaddress,ip)
+values ('Comp#Dell','COMP','Comp#Dell','','');
+insert into registerdhardware (code,type,name,macaddress,ip)
+values ('Comp#A2','COMP','Comp#A2','','');
+insert into registerdhardware (code,type,name,macaddress,ip)
+values ('Prt#A1','PRINT','Q1','','1.1.1.1');
+insert into registerdhardware (code,type,name,macaddress,ip)
+values ('Prt#A2','PRINT','Q2','','2.2.2.2');
+
+insert into computerprinter (username,computercode,action,devicecode,tray,remark,propertycode)
+values ('ADMIN','Comp#Dell','Print Folio (bill)','Prt#A3','Default','Preprinted','SPJ1');
+insert into computerprinter (username,computercode,action,devicecode,tray,remark,propertycode)
+values ('ADMIN','Comp#Dell','Print Bill Info','Prt#A1','Default','Blank Paper','SPJ1');
+insert into computerprinter (username,computercode,action,devicecode,tray,remark,propertycode)
+values ('ADMIN','Comp#Dell','Print Registration Card','Prt#A1','Tray#3','RegisForm','SPJ2');
+insert into computerprinter (username,computercode,action,devicecode,tray,remark,propertycode)
+values ('ADMIN','Comp#A2','Print Bill Info','Prt#A2','Default','Blank Paper','SPJ1');
+insert into computerprinter (username,computercode,action,devicecode,tray,remark,propertycode)
+values ('ADMIN','Comp#A2','Print Folio (bill)','Prt#A3','Default','Preprinted','SPJ2');
+
+CREATE TABLE IF NOT EXISTS position (
+   id serial PRIMARY KEY,
+   position VARCHAR(255)
+);
+
+insert into position (position)
+values ('Administrator');
+insert into position (position)
+values ('Cashier');
+insert into position (position)
+values ('Manager');
+insert into position (position)
+values ('Developer');
+
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE IF NOT EXISTS configmaster(
+   id serial PRIMARY KEY,
+   name VARCHAR(255) UNIQUE NOT NULL,
+   config VARCHAR(255) NOT NULL,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_user
+BEFORE UPDATE ON configmaster
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+INSERT INTO configmaster(name, config) VALUES ('actions', 'Print Folio (bill),Print Bill Info,Print Registration Card');
+INSERT INTO configmaster(name, config) VALUES ('trays', 'Default,Tray#1,Tray#2,Tray#3');
+INSERT INTO configmaster(name, config) VALUES ('remarks', 'Preprinted,Blank Paper,RegisForm');
+
+DROP TABLE IF EXISTS asset;
+
+CREATE TABLE IF NOT EXISTS asset (
+   id serial PRIMARY KEY,
+   name VARCHAR(100),
+    asset text,
+   propertycode VARCHAR(50), 
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_asset
+BEFORE UPDATE ON asset
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into asset (name,asset)
+values ('imgbackground-logo.png','data:image/png;base64,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');
+
+DROP TABLE IF EXISTS reservation ;
+
+CREATE TABLE IF NOT EXISTS reservation (
+   id serial PRIMARY KEY,
+   roomno INT UNIQUE NOT NULL,
+   startdate VARCHAR(255) NOT NULL,
+   enddate VARCHAR(255) NOT NULL,
+   description VARCHAR(255)  NULL,
+
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_user
+BEFORE UPDATE ON reservation 
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+insert into reservation(roomno,startdate,enddate,description) values (8050,'2021-09-15','2021-09-18','test1');
+insert into reservation(roomno,startdate,enddate,description) values (8090,'2021-09-20','2021-09-24','test2');
+
+CREATE TABLE countrymaster (
+	"OFFICIAL LANG CODE" TEXT,
+	"ISO2 CODE" VARCHAR(2),
+	"ISO3 CODE" VARCHAR(3), 
+	"ONU CODE" TEXT,
+	"IS ILOMEMBER" TEXT,
+	"IS RECEIVING QUEST" TEXT,
+	"LABEL EN" TEXT,
+	"LABEL FR" TEXT,
+	"LABEL SP" TEXT,
+	"Geo Shape" TEXT,
+	"geo_point_2d" TEXT
+)
+
+DROP TABLE IF EXISTS individualprofile;
+
+CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE IF NOT EXISTS individualprofile(
+   id serial PRIMARY KEY,
+    guestnameinfoid INT,
+	nameinfoid INT,
+	nameprefix VARCHAR(50),
+	middleinitial VARCHAR(255),
+	namesuffix VARCHAR(50),
+	nametitle VARCHAR(50) NOT NULL,
+	firstname VARCHAR(255) NOT NULL,
+	lastname VARCHAR(255) NOT NULL,
+	idcheck VARCHAR(10),
+	idtype VARCHAR(50),
+	idnumber VARCHAR(50),
+	idissueddate VARCHAR(50),
+	idexpirationdate VARCHAR(50),
+	passportnumber VARCHAR(50),
+	passportname VARCHAR(255),
+	passportvisacheck VARCHAR(255),
+	issuingcountry VARCHAR(255),
+	dateofbirth VARCHAR(50),
+	gender VARCHAR(50),
+	birthcountry VARCHAR(255),
+	birthcity VARCHAR(255),
+	occupation VARCHAR(255),
+	religion VARCHAR(255),
+	passportissueddate VARCHAR(255),
+	passportexpirationdate VARCHAR(255),
+	visanotes TEXT,
+	visanumber VARCHAR(50),
+	visatype VARCHAR(50),
+	visastatus VARCHAR(50),
+	visaissueddate VARCHAR(50),
+	visabegindate VARCHAR(50),
+	visaexpirationdate VARCHAR(50),
+	rank  VARCHAR(50),
+	grade  VARCHAR(50),
+	guestidentity  VARCHAR(50),
+	updatecount  VARCHAR(50),
+	createdby VARCHAR(255),
+	createdon VARCHAR(255),
+	updatedby VARCHAR(255),
+	updatedon VARCHAR(255),
+	scannedidname VARCHAR(255),
+	iddateofbirth VARCHAR(50),
+	idgender VARCHAR(50),
+	nationality VARCHAR(50),
+	address VARCHAR(255),
+	scannedpassport VARCHAR(255),
+	passporttype VARCHAR(50),
+	passportnationality VARCHAR(50),
+	personalnumber INT,
+	passportscannedname VARCHAR(255),
+	passportscanneddate VARCHAR(255),
+	scannedfirstname VARCHAR(255),
+	scannedlastname VARCHAR(255),
+	nopost VARCHAR(10),
+	scannedvisa VARCHAR(255),
+	scannedvisadate VARCHAR(255),
+	scannedid VARCHAR(255),
+	scannediddate VARCHAR(255),
+	idstate VARCHAR(255),
+	visaname VARCHAR(255),
+	passportmiddlename VARCHAR(255),
+	secondlastname VARCHAR(255),
+	guestcategory VARCHAR(50),
+	regcardnumber VARCHAR(255),
+	countryofresidence VARCHAR(255),
+	provinceofresidence VARCHAR(255),
+	bordercrossingentryplace VARCHAR(255),
+	bordercrossingentrydate VARCHAR(255),
+	nrg BOOLEAN,
+	vvip VARCHAR(255),
+	birthregion VARCHAR(255),
+	birthprovince VARCHAR(255),
+	guesttype VARCHAR(255),
+	idissuedregion VARCHAR(255),
+
+
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER set_timestamp_user
+BEFORE UPDATE ON individualprofile
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+INSERT INTO individualprofile(guestnameinfoid,nameinfoid,nameprefix,middleinitial,namesuffix,nametitle,firstname,lastname,idcheck,idtype,
+							  idnumber,idissueddate,idexpirationdate,passportnumber,passportname,passportvisacheck,issuingcountry,
+							  dateofbirth,gender,birthcountry,birthcity,occupation,religion,passportissueddate,passportexpirationdate,
+							  visanotes,visanumber,visatype,visastatus,visaissueddate,visabegindate,visaexpirationdate,rank,grade,
+							  guestidentity,updatecount,createdby,createdon,updatedby,updatedon,scannedidname,iddateofbirth,idgender,
+							  nationality,address,scannedpassport,passporttype,passportnationality,personalnumber,passportscannedname,
+							  passportscanneddate,scannedfirstname,scannedlastname,nopost,scannedvisa,scannedvisadate,scannedid,
+							  scannediddate,idstate,visaname,passportmiddlename,secondlastname,guestcategory,regcardnumber,countryofresidence,
+							  provinceofresidence,bordercrossingentryplace,bordercrossingentrydate,nrg,vvip,birthregion,birthprovince,
+							  guesttype,idissuedregion) 
+							  VALUES (9531,10340,'Mr.','middleinitial','namesuffix','KHUN1','WANITCHAYA','ARMSTRONG',
+							  'Y','IDCARD','1100700222876','12/11/2019','12/11/2023','passportnumber','passportname','passportvisacheck',
+							  'issuingcountry','12/11/1991','Male','Thailand','Bamgkok','Engineer','religion','passportissueddate',
+							  'passportexpirationdate','visanotes','visanumber','visatype','visastatus','visaissueddate','visabegindate',
+							  'visaexpirationdate','rank','grade','guestidentity','updatecount','PREECHA','createdon','AILADA','updatedon',
+							  'scannedidname','iddateofbirth','1','THA','address','scannedpassport','passporttype','passportnationality',
+							  001,'passportscannedname','passportscanneddate','scannedfirstname','scannedlastname','nopost','scannedvisa',
+							  'scannedvisadate','scannedid','scannediddate','idstate','visaname','passportmiddlename','secondlastname','ADULT',
+							  'regcardnumber','countryofresidence','provinceofresidence','bordercrossingentryplace','bordercrossingentrydate','Y',
+							  'V99','birthregion','birthprovince','TOURIST','idissuedregion');
+
+
+
+CREATE TABLE IF NOT EXISTS adgroup (
+   id serial PRIMARY KEY,
+   rolecode VARCHAR(50) NOT NULL,
+   rolename VARCHAR(100),
+   description TEXT,
+   status VARCHAR(8),
+   applygroups TEXT,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TRIGGER set_timestamp_adgroup
+BEFORE UPDATE ON adgroup
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+
+update account set password = '5f4dcc3b5aa765d61d8327deb882cf99';
+update account set adaccount = 'DEV2' where username = 'SAMOON';
+update account set adaccount = 'administrator' where username = 'ADMIN';

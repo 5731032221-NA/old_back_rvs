@@ -1,0 +1,29 @@
+{
+  "config": {
+    "scopes": ["rvspms"],
+    "mandatory_scope": true,
+    "global_credentials": true,
+    "enable_implicit_grant": false,
+    "accept_http_if_already_terminated": false,
+    "enable_authorization_code": false,
+    "enable_password_grant": false,
+    "provision_key": "PHXM4qoXJ5pR5tssOzBs3xFN57zRLzrE",
+    "enable_client_credentials": true,
+    "refresh_token_ttl": 1209600,
+    "hide_credentials": false,
+    "anonymous": null,
+    "token_expiration": 7200,
+    "pkce": "lax",
+    "auth_header_name": "authorization",
+    "reuse_refresh_token": false
+  },
+  "enabled": true,
+  "name": "oauth2",
+  "protocols": ["grpc", "grpcs", "http", "https"],
+  "route": { "id": "e3b3886f-e9eb-4b3c-9a4c-1e76c089fc5b" },
+  "service": null,
+  "consumer": null,
+  "tags": null,
+  "id": "64f7a066-15b7-45f8-b656-3399bfaa5d65",
+  "created_at": 1637721134
+}

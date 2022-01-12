@@ -1,0 +1,24 @@
+{ "USERID":
+    {
+        "admin":{
+            "propertyid": "FSDH",
+            "pswd": "80c9ef0fb86369cd25f90af27ef53a9e",
+            "role": ",CRUD,,,"
+        },
+        "user":{
+            "propertyid": "FSDH",
+            "pswd": "4dae8edd4b2cdd15e95d0a5b3cf1a18f",
+            "role": ",R,,,"
+        },
+        "super":{
+            "propertyid": "FSDH",
+            "pswd": "7812e8b74f6837fba66f86fe86688a2b",
+            "role": ",CRU,,,"
+        },
+        "jeabzaa":{
+            "propertyid": "FSDH",
+            "pswd": "228acbf70d71d01b4b1fb25d3b0741c4",
+            "role": ",CRU,,,"
+        }
+    }
+}

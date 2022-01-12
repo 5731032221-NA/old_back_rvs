@@ -1,0 +1,8 @@
+{
+    "0000": "Access Denied",
+    "1000": "Invalid Parameter",
+    "2002": "Invalid Token",
+    "2500": "Token Expired",
+    "3000": "Session Timeout",
+    "9001": "Session Denied"
+}
